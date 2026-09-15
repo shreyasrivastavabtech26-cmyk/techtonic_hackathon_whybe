@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System - ERP Campus Portal</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React 18 & ReactDOM CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel Standalone (Live in-browser JSX compiler) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --bg-sand: #FAF7EE;
+      --primary-yellow: #FFD233;
+      --primary-yellow-hover: #F5C61D;
+      --border-warm: #E4DFD3;
+      --border-card: #ECE6D8;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-sand);
+      color: #18191B;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .btn-primary {
+      background-color: var(--primary-yellow);
+      color: #121417;
+      font-weight: 700;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-yellow-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 210, 51, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    .persona-pill {
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-warm);
+      background: #FFFFFF;
+      color: #575D66;
+      cursor: pointer;
+    }
+    .persona-pill.active {
+      background: var(--primary-yellow);
+      color: #121417;
+      border-color: var(--primary-yellow);
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(255, 210, 51, 0.3);
+    }
+    .input-portal {
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--border-warm);
+      transition: all 0.15s ease-in-out;
+    }
+    .input-portal:focus {
+      border-color: #18191B;
+      box-shadow: 0 0 0 3px rgba(255, 210, 51, 0.25);
+      outline: none;
+    }
+    .portal-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px -2px rgba(24, 25, 27, 0.05);
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- Initial Loading State -->
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #FAF7EE; font-family: sans-serif;">
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; margin: 0 auto 16px; background-color: #121417; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+          <svg style="width: 24px; height: 24px; fill: #FFD233;" viewBox="0 0 24 24">
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+          </svg>
+        </div>
+        <div style="font-size: 14px; font-weight: bold; color: #18191B;">Initializing Student Management System...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL REACT CODE COMPILED INLINE BY BABEL (Bypasses Chrome file:// CORS Sandbox) -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ==========================================
+    // 1. DATA STORE & SERVICE
+    // ==========================================
+    const initialDatabase = {
+      students: [
+        {
+          id: 1,
+          roll_number: 'STU-2024-0041',
+          first_name: 'Alex',
+          last_name: 'Johnson',
+          department: 'Computer Science & Engineering',
+          semester: 3,
+          contact_email: 'alex.johnson@student.edu',
+          phone: '+1 (555) 234-5678',
+          enrollment_date: '2024-08-15',
+        },
+        {
+          id: 2,
+          roll_number: 'STU-2024-0042',
+          first_name: 'Sophia',
+          last_name: 'Martinez',
+          department: 'Electrical & Robotics Engineering',
+          semester: 3,
+          contact_email: 'sophia.martinez@student.edu',
+          phone: '+1 (555) 876-5432',
+          enrollment_date: '2024-08-15',
+        },
+        {
+          id: 3,
+          roll_number: 'STU-2024-0043',
+          first_name: 'David',
+          last_name: 'Lee',
+          department: 'Data Science & Artificial Intelligence',
+          semester: 2,
+          contact_email: 'david.lee@student.edu',
+          phone: '+1 (555) 345-6789',
+          enrollment_date: '2024-08-15',
+        }
+      ],
+      attendance: [
+        { id: 1, student_id: 1, course_code: 'CS-301', session_date: '2024-11-01', status: 'present', remarks: 'Regular lecture' },
+        { id: 2, student_id: 1, course_code: 'CS-301', session_date: '2024-11-03', status: 'present', remarks: 'Regular lecture' },
+        { id: 3, student_id: 1, course_code: 'CS-301', session_date: '2024-11-05', status: 'absent', remarks: 'Unexcused medical' },
+        { id: 4, student_id: 1, course_code: 'CS-301', session_date: '2024-11-08', status: 'absent', remarks: 'Late arrival >15m' },
+        { id: 5, student_id: 1, course_code: 'CS-301', session_date: '2024-11-10', status: 'present', remarks: 'Regular lecture' },
+        { id: 6, student_id: 1, course_code: 'CS-302', session_date: '2024-11-02', status: 'present', remarks: 'Lab practical' },
+        { id: 7, student_id: 1, course_code: 'CS-302', session_date: '2024-11-04', status: 'absent', remarks: 'Pre-lab missing' },
+        { id: 8, student_id: 1, course_code: 'CS-302', session_date: '2024-11-09', status: 'absent', remarks: 'Absent' },
+        { id: 9, student_id: 1, course_code: 'CS-302', session_date: '2024-11-11', status: 'present', remarks: 'Regular lecture' },
+        { id: 10, student_id: 1, course_code: 'MATH-201', session_date: '2024-11-06', status: 'present', remarks: 'Regular lecture' },
+        { id: 11, student_id: 1, course_code: 'MATH-201', session_date: '2024-11-12', status: 'present', remarks: 'Regular lecture' },
+
+        { id: 12, student_id: 2, course_code: 'CS-301', session_date: '2024-11-01', status: 'present', remarks: 'Regular' },
+        { id: 13, student_id: 2, course_code: 'CS-301', session_date: '2024-11-03', status: 'present', remarks: 'Regular' },
+        { id: 14, student_id: 2, course_code: 'CS-301', session_date: '2024-11-05', status: 'present', remarks: 'Regular' },
+        { id: 15, student_id: 2, course_code: 'CS-301', session_date: '2024-11-08', status: 'present', remarks: 'Regular' },
+        { id: 16, student_id: 2, course_code: 'CS-301', session_date: '2024-11-10', status: 'present', remarks: 'Regular' },
+        { id: 17, student_id: 2, course_code: 'CS-302', session_date: '2024-11-02', status: 'present', remarks: 'Lab' },
+        { id: 18, student_id: 2, course_code: 'CS-302', session_date: '2024-11-04', status: 'present', remarks: 'Lab' },
+        { id: 19, student_id: 2, course_code: 'CS-302', session_date: '2024-11-09', status: 'absent', remarks: 'Conference' },
+        { id: 20, student_id: 2, course_code: 'CS-302', session_date: '2024-11-11', status: 'present', remarks: 'Regular' },
+        { id: 21, student_id: 2, course_code: 'MATH-201', session_date: '2024-11-06', status: 'present', remarks: 'Regular' },
+
+        { id: 22, student_id: 3, course_code: 'CS-301', session_date: '2024-11-01', status: 'present', remarks: 'Regular' },
+        { id: 23, student_id: 3, course_code: 'CS-301', session_date: '2024-11-03', status: 'absent', remarks: 'Absent' },
+        { id: 24, student_id: 3, course_code: 'CS-301', session_date: '2024-11-05', status: 'present', remarks: 'Regular' },
+        { id: 25, student_id: 3, course_code: 'CS-301', session_date: '2024-11-08', status: 'absent', remarks: 'Absent' },
+        { id: 26, student_id: 3, course_code: 'CS-301', session_date: '2024-11-10', status: 'present', remarks: 'Regular' },
+        { id: 27, student_id: 3, course_code: 'MATH-201', session_date: '2024-11-06', status: 'present', remarks: 'Regular' },
+        { id: 28, student_id: 3, course_code: 'MATH-201', session_date: '2024-11-12', status: 'present', remarks: 'Regular' }
+      ],
+      fees: [
+        {
+          id: 1,
+          student_id: 1,
+          semester: 3,
+          academic_year: '2024-2025',
+          total_amount: 4500.00,
+          paid_amount: 3250.00,
+          remaining_amount: 1250.00,
+          due_date: '2024-11-30',
+          status: 'due',
+          last_payment_date: '2024-09-15'
+        },
+        {
+          id: 2,
+          student_id: 2,
+          semester: 3,
+          academic_year: '2024-2025',
+          total_amount: 4800.00,
+          paid_amount: 4800.00,
+          remaining_amount: 0.00,
+          due_date: '2024-11-30',
+          status: 'paid',
+          last_payment_date: '2024-09-02'
+        },
+        {
+          id: 3,
+          student_id: 3,
+          semester: 2,
+          academic_year: '2024-2025',
+          total_amount: 4200.00,
+          paid_amount: 2100.00,
+          remaining_amount: 2100.00,
+          due_date: '2024-12-05',
+          status: 'due',
+          last_payment_date: '2024-08-20'
+        }
+      ]
+    };
+
+    function getDB() {
+      const saved = localStorage.getItem('college_erp_db_v2');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+      localStorage.setItem('college_erp_db_v2', JSON.stringify(initialDatabase));
+      return JSON.parse(JSON.stringify(initialDatabase));
+    }
+
+    function saveDB(state) {
+      localStorage.setItem('college_erp_db_v2', JSON.stringify(state));
+    }
+
+    const ERP = {
+      login(identifier, password, role) {
+        const state = getDB();
+        let user = null;
+        if (role === 'admin') {
+          user = { id: 1, username: 'admin', role: 'admin', displayName: 'Dr. Evelyn Vance (Admin)' };
+        } else if (role === 'faculty') {
+          user = { id: 2, username: 'prof_alan', role: 'faculty', displayName: 'Prof. Alan Turing (CS Dept)' };
+        } else {
+          const matched = state.students.find(s => s.roll_number.toLowerCase() === identifier.toLowerCase()) || state.students[0];
+          user = {
+            id: matched.id + 3,
+            username: matched.roll_number,
+            role: 'student',
+            studentId: matched.id,
+            rollNumber: matched.roll_number,
+            displayName: `${matched.first_name} ${matched.last_name}`,
+            department: matched.department,
+          };
+        }
+        return { success: true, user };
+      },
+
+      getStudents(search = '') {
+        const state = getDB();
+        let list = state.students;
+        if (search) {
+          const q = search.toLowerCase();
+          list = list.filter(s =>
+            s.roll_number.toLowerCase().includes(q) ||
+            s.first_name.toLowerCase().includes(q) ||
+            s.last_name.toLowerCase().includes(q) ||
+            s.department.toLowerCase().includes(q)
+          );
+        }
+        return { students: list };
+      },
+
+      createStudent(data) {
+        const state = getDB();
+        const newId = (state.students.length > 0 ? Math.max(...state.students.map(s => s.id)) : 0) + 1;
+        const student = {
+          id: newId,
+          roll_number: data.roll_number,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          department: data.department,
+          semester: parseInt(data.semester, 10) || 1,
+          contact_email: data.contact_email,
+          phone: data.phone || '+1 (555) 000-0000',
+          enrollment_date: new Date().toISOString().split('T')[0],
+        };
+        state.students.push(student);
+        state.fees.push({
+          id: state.fees.length + 1,
+          student_id: newId,
+          semester: student.semester,
+          academic_year: '2024-2025',
+          total_amount: 4500.00,
+          paid_amount: 0.00,
+          remaining_amount: 4500.00,
+          due_date: '2024-12-15',
+          status: 'due',
+          last_payment_date: null,
+        });
+        saveDB(state);
+        return student;
+      },
+
+      deleteStudent(id) {
+        const state = getDB();
+        state.students = state.students.filter(s => s.id !== id);
+        state.attendance = state.attendance.filter(a => a.student_id !== id);
+        state.fees = state.fees.filter(f => f.student_id !== id);
+        saveDB(state);
+      },
+
+      getAttendanceSummary(studentId) {
+        const state = getDB();
+        const records = state.attendance.filter(a => a.student_id === studentId);
+        const total = records.length;
+        const attended = records.filter(a => a.status === 'present').length;
+        const absent = records.filter(a => a.status === 'absent').length;
+        const late = records.filter(a => a.status === 'late').length;
+
+        const percentage = total > 0 ? parseFloat(((attended / total) * 100).toFixed(1)) : 0;
+        const isBelow75 = total > 0 && percentage < 75.0;
+        const needed = isBelow75 ? Math.max(0, Math.ceil((0.75 * total - attended) / 0.25)) : 0;
+
+        const courses = ['CS-301', 'CS-302', 'MATH-201'].map(code => {
+          const cRecs = records.filter(r => r.course_code === code);
+          const cTotal = cRecs.length;
+          const cAtt = cRecs.filter(r => r.status === 'present').length;
+          return {
+            course_code: code,
+            course_name: code === 'CS-301' ? 'Data Structures & Algorithms' : (code === 'CS-302' ? 'Database Management Systems' : 'Discrete Mathematics'),
+            course_total: cTotal,
+            course_attended: cAtt,
+            course_percentage: cTotal > 0 ? parseFloat(((cAtt / cTotal) * 100).toFixed(1)) : 0,
+          };
+        });
+
+        return {
+          totalSessions: total,
+          attendedSessions: attended,
+          absentSessions: absent,
+          lateSessions: late,
+          attendancePercentage: percentage,
+          isBelow75Warning: isBelow75,
+          classesNeededToRecover: needed,
+          courses,
+          recentSessions: records.slice().reverse(),
+        };
+      },
+
+      markAttendance(data) {
+        const state = getDB();
+        const rec = {
+          id: state.attendance.length + 1,
+          student_id: data.studentId,
+          course_code: data.courseCode,
+          session_date: data.sessionDate,
+          status: data.status,
+          remarks: data.remarks || 'Updated via portal',
+        };
+        const idx = state.attendance.findIndex(a => a.student_id === rec.student_id && a.course_code === rec.course_code && a.session_date === rec.session_date);
+        if (idx >= 0) state.attendance[idx] = rec;
+        else state.attendance.push(rec);
+        saveDB(state);
+      },
+
+      getFees(studentId = null) {
+        const state = getDB();
+        let fees = state.fees;
+        if (studentId) fees = fees.filter(f => f.student_id === studentId);
+
+        const list = fees.map(f => {
+          const stu = state.students.find(s => s.id === f.student_id) || {};
+          return {
+            ...f,
+            roll_number: stu.roll_number || 'N/A',
+            student_name: stu.first_name ? `${stu.first_name} ${stu.last_name}` : 'Unknown',
+            department: stu.department || 'N/A',
+          };
+        });
+
+        let totalAssessed = 0, totalPaid = 0, totalRemaining = 0, hasDue = false;
+        list.forEach(f => {
+          totalAssessed += f.total_amount;
+          totalPaid += f.paid_amount;
+          totalRemaining += f.remaining_amount;
+          if (f.remaining_amount > 0 && f.status === 'due') hasDue = true;
+        });
+
+        return {
+          list,
+          totalAssessed,
+          totalPaid,
+          totalRemaining,
+          hasDue,
+        };
+      },
+
+      recordPayment(feeId, amount) {
+        const state = getDB();
+        const fee = state.fees.find(f => f.id === feeId);
+        if (fee) {
+          fee.paid_amount = Math.min(fee.total_amount, fee.paid_amount + parseFloat(amount));
+          fee.remaining_amount = fee.total_amount - fee.paid_amount;
+          fee.status = fee.remaining_amount <= 0 ? 'paid' : 'due';
+          fee.last_payment_date = new Date().toISOString().split('T')[0];
+          saveDB(state);
+        }
+      }
+    };
+
+    // ==========================================
+    // 2. NAVBAR COMPONENT
+    // ==========================================
+    function Navbar({ currentUser, onSwitchRole, onSignOut }) {
+      return (
+        <header className="sticky top-0 z-40 bg-[#FAF7EE] border-b border-[#ECE5D5]">
+          <div className="bg-[#FFF8DF] border-b border-[#E9E0C8] px-4 sm:px-8 py-1.5 text-xs text-[#575D66] flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-bold tracking-wider text-black text-[10px] uppercase">Academic Portal V4.2.1 Active</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-[#33373D] text-[11px]">ERP Core Operational</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-gray-600 font-semibold text-[11px]">Simulate Role:</span>
+              <div className="flex items-center gap-1 bg-[#F5EED9] p-0.5 rounded-lg border border-[#DECFA9]">
+                <button
+                  onClick={() => onSwitchRole('admin')}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase transition ${currentUser?.role === 'admin' ? 'bg-black text-white' : 'text-gray-700 hover:text-black'}`}
+                >
+                  Admin
+                </button>
+                <button
+                  onClick={() => onSwitchRole('faculty')}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase transition ${currentUser?.role === 'faculty' ? 'bg-black text-white' : 'text-gray-700 hover:text-black'}`}
+                >
+                  Faculty
+                </button>
+                <button
+                  onClick={() => onSwitchRole('student')}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase transition ${currentUser?.role === 'student' ? 'bg-black text-white' : 'text-gray-700 hover:text-black'}`}
+                >
+                  Student
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#121417] text-white flex items-center justify-center shadow-sm">
+                <svg className="w-5 h-5 text-[#FFD233]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+                </svg>
+              </div>
+              <div>
+                <h1 className="font-extrabold text-base tracking-tight text-[#121417] leading-tight">Student Management System</h1>
+                <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase">ERP Centralized Services</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {currentUser && (
+                <div className="flex items-center gap-2 text-right">
+                  <div>
+                    <div className="text-xs font-black text-gray-900 leading-none">{currentUser.displayName}</div>
+                    <div className="text-[10px] text-gray-500 mt-0.5">
+                      <span className={`px-2 py-0.5 rounded font-bold uppercase text-[9px] ${currentUser.role === 'admin' ? 'bg-red-100 text-red-800' : (currentUser.role === 'faculty' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800')}`}>
+                        {currentUser.role}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-[#18191B] text-white flex items-center justify-center text-xs font-bold">
+                    {currentUser.displayName.charAt(0)}
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={onSignOut}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 text-xs font-bold text-gray-700 transition"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    // ==========================================
+    // 3. EXACT STITCH LOGIN VIEW COMPONENT
+    // ==========================================
+    function LoginView({ onLoginSuccess }) {
+      const [persona, setPersona] = useState('student');
+      const [identifier, setIdentifier] = useState('STU-2024-0041');
+      const [password, setPassword] = useState('UniversityPass2024!');
+      const [showPassword, setShowPassword] = useState(false);
+
+      const configs = {
+        student: {
+          label: 'Student Roll Number / User ID',
+          defaultId: 'STU-2024-0041',
+          placeholder: 'e.g. STU-2024-0041',
+          help: '11-digit university-issued ID code provided during onboarding and on student ID card.',
+          btn: 'Log in as Student →',
+        },
+        faculty: {
+          label: 'Faculty Staff ID / Academic NetID',
+          defaultId: 'FAC-BIO-8902',
+          placeholder: 'e.g. FAC-BIO-8902',
+          help: 'Authorized faculty identity credential provided by Academic Affairs.',
+          btn: 'Log in as Faculty →',
+        },
+        admin: {
+          label: 'Administrative Enterprise ID',
+          defaultId: 'ADM-SEC-0112',
+          placeholder: 'e.g. ADM-SEC-0112',
+          help: 'Enterprise Active Directory identity code with elevated clearance.',
+          btn: 'Log in as Administrator →',
+        },
+      };
+
+      const handlePersonaChange = (p) => {
+        setPersona(p);
+        setIdentifier(configs[p].defaultId);
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const res = ERP.login(identifier, password, persona);
+        onLoginSuccess(res.user);
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col justify-between bg-[#FAF7EE] text-[#18191B]">
+          {/* Announcement Bar */}
+          <div className="bg-[#FFF8DF] border-b border-[#E9E0C8] px-4 sm:px-8 py-2 text-xs text-[#575D66] flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-bold tracking-wider text-black text-[11px] uppercase">Academic Portal V4.2.1 Active</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-[#33373D]">Fall Semester 2024-2025 Registration & Grading Open</span>
+            </div>
+            <span className="text-xs font-semibold text-gray-800 underline">Campus Info & Help Center</span>
+          </div>
+
+          {/* Header */}
+          <header className="bg-[#FAF7EE] border-b border-[#ECE5D5] px-4 sm:px-8 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#121417] text-white flex items-center justify-center shadow-sm">
+                <svg className="w-5 h-5 text-[#FFD233]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+                </svg>
+              </div>
+              <div>
+                <h1 className="font-extrabold text-base tracking-tight text-[#121417] leading-tight">Student Management System</h1>
+                <p className="text-[10px] text-gray-500 font-medium tracking-wide uppercase">Official University SIS Gateway</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F2EDE1] text-[11px] font-semibold text-gray-700 border border-[#E3DC handle-gray]">
+                AY 2024-2025
+              </span>
+              <div className="w-8 h-8 rounded-full bg-[#18191B] text-white flex items-center justify-center text-xs font-bold">
+                SIS
+              </div>
+            </div>
+          </header>
+
+          {/* Grid Layout */}
+          <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+              
+              {/* Left Column: Stitch Campus Hub */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ECE5D5] text-[11px] font-bold tracking-wider uppercase text-gray-800 border border-[#E0D8C6]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-black"></span>
+                  Official Campus Gateway
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Student Management System</p>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight text-[#111315] leading-[1.15]">
+                    Welcome to your <br className="hidden sm:inline"/>Academic Hub.
+                  </h2>
+                  <p className="mt-3 text-sm sm:text-base text-[#575D66] leading-relaxed max-w-xl">
+                    Sign in to access verified transcripts, syllabus tracking, real-time timetable changes, tuition portals, and research databases.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="px-3 py-1.5 rounded-lg bg-white border border-[#E4DFD3] text-xs font-semibold text-gray-700 shadow-sm">18,400 Enrolled Students</span>
+                  <span className="px-3 py-1.5 rounded-lg bg-white border border-[#E4DFD3] text-xs font-semibold text-gray-700 shadow-sm">7 Faculties & Labs</span>
+                  <span className="px-3 py-1.5 rounded-lg bg-white border border-[#E4DFD3] text-xs font-semibold text-gray-700 shadow-sm">Accredited Academic Core</span>
+                </div>
+
+                {/* Campus Bulletin */}
+                <div className="portal-card p-5 bg-white border border-[#ECE6D8]">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#FFD233]"></span>
+                      <h3 className="font-extrabold text-sm tracking-tight text-gray-900">Campus Bulletin & Schedule</h3>
+                    </div>
+                    <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">Updated 24m Ago</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <div className="bg-[#FAF8F2] border border-[#ECE5D5] rounded-xl p-4">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FEF3C7] text-[#B45309] uppercase">Campus Notice</span>
+                        <span className="text-[11px] text-gray-500 font-medium">Nov 18, 2024</span>
+                      </div>
+                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 leading-snug">Mid-Semester Draft Schedule</h4>
+                      <p className="mt-1.5 text-xs text-gray-600 leading-relaxed">
+                        Timetable revision draft for all faculties is now open for review. Student revisions must be submitted by Friday.
+                      </p>
+                    </div>
+
+                    <div className="bg-[#FAF8F2] border border-[#ECE5D5] rounded-xl p-4">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#DCFCE7] text-[#15803D] uppercase">Systems Operational</span>
+                      </div>
+                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 leading-snug">Moodle LMS & SIS Nodes</h4>
+                      <p className="mt-1.5 text-xs text-gray-600 leading-relaxed">
+                        Cloud infrastructure running at 99.9% throughput. Library proxy authentication and research database synchronized.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Helpdesk */}
+                <div className="portal-card p-4 sm:p-5 bg-[#FAF8F2] border border-[#E9E1D2] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-gray-900">Need assistance logging in?</h4>
+                    <p className="text-xs text-gray-600 mt-0.5">Contact 24/7 IT Campus Helpdesk: call <span className="font-semibold text-gray-900">(800) 555-0199</span> or visit Library Room 204.</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => alert('Self-Recovery tool')} className="px-3 py-1.5 rounded-lg border border-gray-400 bg-white text-xs font-semibold">Self-Recovery</button>
+                    <button type="button" onClick={() => alert('Roll PIN Tool')} className="px-3 py-1.5 rounded-lg border border-gray-400 bg-white text-xs font-semibold">Activate Roll</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Sign In Card */}
+              <div className="lg:col-span-5">
+                <div className="portal-card bg-white border border-[#E6DFD1] p-6 sm:p-7 shadow-lg rounded-2xl">
+                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    <span className="flex items-center gap-1.5 text-gray-600">
+                      <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                      Identity & Access Security Core
+                    </span>
+                    <span className="bg-[#F2EDE1] px-2 py-0.5 rounded text-gray-700 font-mono">ID: 2024</span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-2xl font-black tracking-tight text-[#111315]">Sign In</h3>
+                    <p className="text-xs text-gray-500 mt-1">Please authenticate using your university-issued credentials.</p>
+                  </div>
+
+                  {/* Persona Selector Tabs */}
+                  <div className="mt-5">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">Select Portal Persona</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handlePersonaChange('student')}
+                        className={`persona-pill py-2 px-2 text-center rounded-lg text-xs font-bold ${persona === 'student' ? 'active' : 'hover:bg-gray-50'}`}
+                      >
+                        {persona === 'student' && <span className="inline-block w-1.5 h-1.5 rounded-full bg-black mr-1"></span>}
+                        Student
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePersonaChange('faculty')}
+                        className={`persona-pill py-2 px-2 text-center rounded-lg text-xs font-bold ${persona === 'faculty' ? 'active' : 'hover:bg-gray-50'}`}
+                      >
+                        {persona === 'faculty' && <span className="inline-block w-1.5 h-1.5 rounded-full bg-black mr-1"></span>}
+                        Faculty
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePersonaChange('admin')}
+                        className={`persona-pill py-2 px-2 text-center rounded-lg text-xs font-bold ${persona === 'admin' ? 'active' : 'hover:bg-gray-50'}`}
+                      >
+                        {persona === 'admin' && <span className="inline-block w-1.5 h-1.5 rounded-full bg-black mr-1"></span>}
+                        Admin / IT
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Form */}
+                  <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-800">{configs[persona].label}</label>
+                        <span className="text-[11px] font-bold text-gray-600 underline cursor-pointer" onClick={() => alert('Format syntax: STU-YYYY-XXXX')}>Format ID</span>
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        placeholder={configs[persona].placeholder}
+                        className="input-portal w-full px-3.5 py-2.5 rounded-lg text-xs font-mono font-medium text-gray-900"
+                      />
+                      <p className="text-[10px] text-gray-500 mt-1">{configs[persona].help}</p>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-gray-800">Institutional Password</label>
+                        <span className="text-[11px] font-bold text-gray-600 underline cursor-pointer">Forgot password?</span>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="input-portal w-full px-3.5 pr-10 py-2.5 rounded-lg text-xs text-gray-900"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 text-xs"
+                        >
+                          {showPassword ? 'Hide' : 'Show'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-0.5">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-black border-gray-300" />
+                        <span className="text-xs text-gray-700 font-medium">Remember on this workstation</span>
+                      </label>
+                      <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">30 days valid</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn-primary w-full py-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      {configs[persona].btn}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => alert('Redirecting to Azure AD Single Sign-On...')}
+                      className="w-full py-2.5 px-3 rounded-lg border border-[#DCD5C6] bg-white hover:bg-[#F9F7F1] text-xs font-bold text-gray-800 flex items-center justify-center gap-2"
+                    >
+                      Campus SSO (Azure AD / One-Credential)
+                    </button>
+
+                    <div className="bg-[#FAF8F2] border border-[#ECE5D5] rounded-xl p-3 text-[11px] text-gray-600">
+                      <strong className="text-gray-800 block">Strict Multi-Factor Policy Enforced</strong>
+                      Sign-in is logged on central servers. Unattended sessions expire in 15 mins.
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </main>
+
+          <footer className="bg-[#FAF7EE] border-t border-[#ECE5D5] px-4 sm:px-8 py-4 text-[11px] text-gray-600 text-center">
+            © 2024 Student Management System. All rights reserved. • 256-bit SSL Secure
+          </footer>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 4. ADMIN DASHBOARD COMPONENT
+    // ==========================================
+    function AdminDashboard({ user }) {
+      const [tab, setTab] = useState('students');
+      const [students, setStudents] = useState([]);
+      const [search, setSearch] = useState('');
+      const [showAdd, setShowAdd] = useState(false);
+      const [selectedStudentId, setSelectedStudentId] = useState(1);
+      const [attSummary, setAttSummary] = useState(null);
+      const [markData, setMarkData] = useState({ courseCode: 'CS-301', sessionDate: new Date().toISOString().split('T')[0], status: 'present', remarks: 'Admin verified' });
+      const [fees, setFees] = useState([]);
+      const [payModal, setPayModal] = useState({ open: false, feeId: null, amount: '' });
+      const [newStudent, setNewStudent] = useState({ roll_number: '', first_name: '', last_name: '', department: 'Computer Science & Engineering', semester: 1, contact_email: '' });
+
+      const refresh = () => {
+        setStudents(ERP.getStudents(search).students);
+        if (selectedStudentId) setAttSummary(ERP.getAttendanceSummary(selectedStudentId));
+        setFees(ERP.getFees().list);
+      };
+
+      useEffect(() => { refresh(); }, [search, selectedStudentId]);
+
+      const handleAddStudent = (e) => {
+        e.preventDefault();
+        ERP.createStudent(newStudent);
+        setShowAdd(false);
+        setNewStudent({ roll_number: '', first_name: '', last_name: '', department: 'Computer Science & Engineering', semester: 1, contact_email: '' });
+        refresh();
+      };
+
+      const handleDelete = (id) => {
+        if (confirm('Delete this student from system database?')) {
+          ERP.deleteStudent(id);
+          refresh();
+        }
+      };
+
+      const handleMarkAtt = (e) => {
+        e.preventDefault();
+        ERP.markAttendance({ studentId: selectedStudentId, ...markData });
+        refresh();
+      };
+
+      const handleRecordPayment = (e) => {
+        e.preventDefault();
+        ERP.recordPayment(payModal.feeId, payModal.amount);
+        setPayModal({ open: false, feeId: null, amount: '' });
+        refresh();
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-100 text-red-800 border border-red-200">
+                System Administrator Clearance
+              </span>
+              <h2 className="text-2xl font-black text-gray-900 mt-1">Enterprise Management Core</h2>
+              <p className="text-xs text-gray-500">Full unconstrained privileges across Student Records, Attendance, and Fee Structures.</p>
+            </div>
+            <div className="flex bg-[#F5F1E6] p-1 rounded-xl border border-[#E4DFD3] text-xs font-bold">
+              <button onClick={() => setTab('students')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'students' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Students ({students.length})</button>
+              <button onClick={() => setTab('attendance')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'attendance' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Attendance Master</button>
+              <button onClick={() => setTab('fees')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'fees' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Fee Ledger ({fees.length})</button>
+            </div>
+          </div>
+
+          {/* Students CRUD */}
+          {tab === 'students' && (
+            <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="input-portal px-3 py-1.5 rounded-lg text-xs w-64"
+                />
+                <button onClick={() => setShowAdd(true)} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold">+ Add Student</button>
+              </div>
+              <div className="overflow-x-auto border border-gray-200 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FAF8F2] border-b text-gray-600 font-bold uppercase text-[10px]">
+                    <tr>
+                      <th className="p-3">Roll No</th>
+                      <th className="p-3">Name</th>
+                      <th className="p-3">Department</th>
+                      <th className="p-3">Semester</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {students.map(s => (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        <td className="p-3 font-mono font-bold">{s.roll_number}</td>
+                        <td className="p-3 font-medium">{s.first_name} {s.last_name}</td>
+                        <td className="p-3 text-gray-600">{s.department}</td>
+                        <td className="p-3 text-gray-600">Sem {s.semester}</td>
+                        <td className="p-3 text-right space-x-1">
+                          <button onClick={() => { setSelectedStudentId(s.id); setTab('attendance'); }} className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-[11px] font-semibold">Attendance</button>
+                          <button onClick={() => handleDelete(s.id)} className="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[11px] font-semibold">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Attendance */}
+          {tab === 'attendance' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-5 bg-white border border-[#E6DFD1] rounded-2xl p-5 shadow-sm space-y-3">
+                <h3 className="font-extrabold text-base text-gray-900">Mark / Edit Attendance</h3>
+                <form onSubmit={handleMarkAtt} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Student</label>
+                    <select value={selectedStudentId} onChange={(e) => setSelectedStudentId(parseInt(e.target.value, 10))} className="input-portal w-full p-2 rounded-lg text-xs">
+                      {students.map(s => <option key={s.id} value={s.id}>{s.roll_number} - {s.first_name} {s.last_name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Course</label>
+                    <select value={markData.courseCode} onChange={(e) => setMarkData({ ...markData, courseCode: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs">
+                      <option value="CS-301">CS-301: Data Structures</option>
+                      <option value="CS-302">CS-302: Database Management</option>
+                      <option value="MATH-201">MATH-201: Discrete Math</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Date</label>
+                      <input type="date" value={markData.sessionDate} onChange={(e) => setMarkData({ ...markData, sessionDate: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Status</label>
+                      <select value={markData.status} onChange={(e) => setMarkData({ ...markData, status: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs">
+                        <option value="present">Present</option>
+                        <option value="absent">Absent</option>
+                        <option value="late">Late</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="submit" className="btn-primary w-full py-2 rounded-lg text-xs font-bold">Save Attendance</button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-7 bg-white border border-[#E6DFD1] rounded-2xl p-5 shadow-sm space-y-3">
+                <div className="flex justify-between items-center pb-2 border-b">
+                  <h3 className="font-extrabold text-base text-gray-900">Attendance Standing</h3>
+                  {attSummary?.isBelow75Warning && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">⚠️ Below 75% Warning</span>
+                  )}
+                </div>
+                {attSummary && (
+                  <div>
+                    <div className="grid grid-cols-3 gap-2 text-center mb-3">
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg">{attSummary.attendancePercentage}%</div><div className="text-[10px] text-gray-500">Rate</div></div>
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg text-emerald-700">{attSummary.attendedSessions}</div><div className="text-[10px] text-gray-500">Present</div></div>
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg text-rose-700">{attSummary.absentSessions}</div><div className="text-[10px] text-gray-500">Absent</div></div>
+                    </div>
+                    <div className="max-h-48 overflow-y-auto border rounded-lg">
+                      <table className="w-full text-xs">
+                        <tbody className="divide-y">
+                          {attSummary.recentSessions.map(s => (
+                            <tr key={s.id} className="p-2">
+                              <td className="p-2 font-mono text-[11px]">{s.session_date}</td>
+                              <td className="p-2 font-semibold">{s.course_code}</td>
+                              <td className="p-2"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${s.status === 'present' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{s.status}</span></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Fees */}
+          {tab === 'fees' && (
+            <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <h3 className="font-extrabold text-base text-gray-900">Fee Ledger Management</h3>
+              <div className="overflow-x-auto border rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FAF8F2] border-b text-[10px] text-gray-600 font-bold uppercase">
+                    <tr>
+                      <th className="p-3">Roll No</th>
+                      <th className="p-3">Student</th>
+                      <th className="p-3">Total Fee</th>
+                      <th className="p-3">Paid</th>
+                      <th className="p-3">Remaining</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {fees.map(f => (
+                      <tr key={f.id} className="hover:bg-gray-50">
+                        <td className="p-3 font-mono font-bold">{f.roll_number}</td>
+                        <td className="p-3">{f.student_name}</td>
+                        <td className="p-3 font-semibold">${f.total_amount.toLocaleString()}</td>
+                        <td className="p-3 text-emerald-700">${f.paid_amount.toLocaleString()}</td>
+                        <td className="p-3 font-mono font-bold text-amber-700">${f.remaining_amount.toLocaleString()}</td>
+                        <td className="p-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${f.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{f.status}</span></td>
+                        <td className="p-3 text-right">
+                          {f.remaining_amount > 0 && (
+                            <button onClick={() => setPayModal({ open: true, feeId: f.id, amount: f.remaining_amount })} className="btn-primary px-2.5 py-1 rounded text-[11px]">Record Payment</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Add Student Modal */}
+          {showAdd && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border">
+                <h3 className="font-bold text-base text-gray-900 pb-2 border-b">Add New Student</h3>
+                <form onSubmit={handleAddStudent} className="space-y-3 pt-3">
+                  <input type="text" placeholder="Roll Number (e.g. STU-2024-0044)" required value={newStudent.roll_number} onChange={e => setNewStudent({ ...newStudent, roll_number: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="First Name" required value={newStudent.first_name} onChange={e => setNewStudent({ ...newStudent, first_name: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                    <input type="text" placeholder="Last Name" required value={newStudent.last_name} onChange={e => setNewStudent({ ...newStudent, last_name: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                  </div>
+                  <input type="email" placeholder="Email" required value={newStudent.contact_email} onChange={e => setNewStudent({ ...newStudent, contact_email: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button type="button" onClick={() => setShowAdd(false)} className="px-3 py-1.5 border rounded-lg text-xs">Cancel</button>
+                    <button type="submit" className="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold">Register Student</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Record Payment Modal */}
+          {payModal.open && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border">
+                <h3 className="font-bold text-base text-gray-900 pb-2 border-b">Record Student Fee Payment</h3>
+                <form onSubmit={handleRecordPayment} className="space-y-3 pt-3">
+                  <input type="number" step="0.01" required value={payModal.amount} onChange={e => setPayModal({ ...payModal, amount: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs font-mono font-bold" />
+                  <div className="flex justify-end gap-2">
+                    <button type="button" onClick={() => setPayModal({ open: false, feeId: null, amount: '' })} className="px-3 py-1.5 border rounded-lg text-xs">Cancel</button>
+                    <button type="submit" className="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold">Apply</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 5. FACULTY DASHBOARD COMPONENT
+    // ==========================================
+    function FacultyDashboard({ user }) {
+      const [tab, setTab] = useState('attendance');
+      const [students, setStudents] = useState([]);
+      const [search, setSearch] = useState('');
+      const [selectedStudentId, setSelectedStudentId] = useState(1);
+      const [attSummary, setAttSummary] = useState(null);
+      const [markData, setMarkData] = useState({ courseCode: 'CS-301', sessionDate: new Date().toISOString().split('T')[0], status: 'present', remarks: 'Faculty verified' });
+      const [fees, setFees] = useState([]);
+      const [payModal, setPayModal] = useState({ open: false, feeId: null, amount: '' });
+
+      const refresh = () => {
+        setStudents(ERP.getStudents(search).students);
+        if (selectedStudentId) setAttSummary(ERP.getAttendanceSummary(selectedStudentId));
+        setFees(ERP.getFees().list);
+      };
+
+      useEffect(() => { refresh(); }, [search, selectedStudentId]);
+
+      const handleMarkAtt = (e) => {
+        e.preventDefault();
+        ERP.markAttendance({ studentId: selectedStudentId, ...markData });
+        refresh();
+      };
+
+      const handleRecordPayment = (e) => {
+        e.preventDefault();
+        ERP.recordPayment(payModal.feeId, payModal.amount);
+        setPayModal({ open: false, feeId: null, amount: '' });
+        refresh();
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-blue-100 text-blue-800 border border-blue-200">
+                Faculty Academic Portal
+              </span>
+              <h2 className="text-2xl font-black text-gray-900 mt-1">Instructor Workstation</h2>
+              <p className="text-xs text-gray-500">Role Policy: <span className="font-semibold text-gray-800">View Student Directory</span> (Read-Only) • <span className="font-semibold text-emerald-700">Edit Attendance</span> • <span className="font-semibold text-amber-700">Edit Fees</span>.</p>
+            </div>
+            <div className="flex bg-[#F5F1E6] p-1 rounded-xl border border-[#E4DFD3] text-xs font-bold">
+              <button onClick={() => setTab('attendance')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'attendance' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Attendance Editor</button>
+              <button onClick={() => setTab('students')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'students' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Student Records (View-Only)</button>
+              <button onClick={() => setTab('fees')} className={`px-3 py-1.5 rounded-lg transition ${tab === 'fees' ? 'bg-white text-black shadow-sm' : 'text-gray-600'}`}>Fee Ledger (Edit Access)</button>
+            </div>
+          </div>
+
+          {/* Attendance (Edit access) */}
+          {tab === 'attendance' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-5 bg-white border border-[#E6DFD1] rounded-2xl p-5 shadow-sm space-y-3">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-extrabold text-base text-gray-900">Mark Class Attendance</h3>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Edit Access Granted</span>
+                </div>
+                <form onSubmit={handleMarkAtt} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Student</label>
+                    <select value={selectedStudentId} onChange={(e) => setSelectedStudentId(parseInt(e.target.value, 10))} className="input-portal w-full p-2 rounded-lg text-xs">
+                      {students.map(s => <option key={s.id} value={s.id}>{s.roll_number} - {s.first_name} {s.last_name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Course</label>
+                    <select value={markData.courseCode} onChange={(e) => setMarkData({ ...markData, courseCode: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs">
+                      <option value="CS-301">CS-301: Data Structures</option>
+                      <option value="CS-302">CS-302: Database Management</option>
+                      <option value="MATH-201">MATH-201: Discrete Math</option>
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Date</label>
+                      <input type="date" value={markData.sessionDate} onChange={(e) => setMarkData({ ...markData, sessionDate: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Status</label>
+                      <select value={markData.status} onChange={(e) => setMarkData({ ...markData, status: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs">
+                        <option value="present">Present</option>
+                        <option value="absent">Absent</option>
+                        <option value="late">Late</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="submit" className="btn-primary w-full py-2 rounded-lg text-xs font-bold">Submit Attendance Update</button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-7 bg-white border border-[#E6DFD1] rounded-2xl p-5 shadow-sm space-y-3">
+                <div className="flex justify-between items-center pb-2 border-b">
+                  <h3 className="font-extrabold text-base text-gray-900">Student Standing Analysis</h3>
+                  {attSummary?.isBelow75Warning && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">⚠️ Below 75% Debarment Risk</span>
+                  )}
+                </div>
+                {attSummary && (
+                  <div>
+                    <div className="grid grid-cols-3 gap-2 text-center mb-3">
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg">{attSummary.attendancePercentage}%</div><div className="text-[10px] text-gray-500">Rate</div></div>
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg text-emerald-700">{attSummary.attendedSessions}</div><div className="text-[10px] text-gray-500">Present</div></div>
+                      <div className="bg-[#FAF8F2] p-2 rounded-lg font-bold"><div className="text-lg text-rose-700">{attSummary.absentSessions}</div><div className="text-[10px] text-gray-500">Absent</div></div>
+                    </div>
+                    {attSummary.isBelow75Warning && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 mb-3">
+                        Student needs {attSummary.classesNeededToRecover} more consecutive attended classes to reach the mandatory 75% examination threshold.
+                      </div>
+                    )}
+                    <div className="max-h-48 overflow-y-auto border rounded-lg">
+                      <table className="w-full text-xs">
+                        <tbody className="divide-y">
+                          {attSummary.recentSessions.map(s => (
+                            <tr key={s.id} className="p-2">
+                              <td className="p-2 font-mono text-[11px]">{s.session_date}</td>
+                              <td className="p-2 font-semibold">{s.course_code}</td>
+                              <td className="p-2"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${s.status === 'present' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{s.status}</span></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Student Records (Read-Only) */}
+          {tab === 'students' && (
+            <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-extrabold text-base text-gray-900">Student Directory (Read-Only)</h3>
+                  <p className="text-xs text-gray-500">Faculty policy grants view-only access. Modification restricted to Admins.</p>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="input-portal px-3 py-1.5 rounded-lg text-xs w-64"
+                />
+              </div>
+              <div className="overflow-x-auto border border-gray-200 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FAF8F2] border-b text-[10px] text-gray-600 font-bold uppercase">
+                    <tr>
+                      <th className="p-3">Roll No</th>
+                      <th className="p-3">Name</th>
+                      <th className="p-3">Department</th>
+                      <th className="p-3">Semester</th>
+                      <th className="p-3 text-right">Access</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {students.map(s => (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        <td className="p-3 font-mono font-bold">{s.roll_number}</td>
+                        <td className="p-3 font-medium">{s.first_name} {s.last_name}</td>
+                        <td className="p-3 text-gray-600">{s.department}</td>
+                        <td className="p-3 text-gray-600">Sem {s.semester}</td>
+                        <td className="p-3 text-right"><span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">View Only</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Fees (Edit access) */}
+          {tab === 'fees' && (
+            <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="font-extrabold text-base text-gray-900">Fee Ledger (Edit Access)</h3>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">Edit Access Granted</span>
+              </div>
+              <div className="overflow-x-auto border rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#FAF8F2] border-b text-[10px] text-gray-600 font-bold uppercase">
+                    <tr>
+                      <th className="p-3">Roll No</th>
+                      <th className="p-3">Student</th>
+                      <th className="p-3">Total Fee</th>
+                      <th className="p-3">Paid</th>
+                      <th className="p-3">Remaining</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Faculty Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {fees.map(f => (
+                      <tr key={f.id} className="hover:bg-gray-50">
+                        <td className="p-3 font-mono font-bold">{f.roll_number}</td>
+                        <td className="p-3">{f.student_name}</td>
+                        <td className="p-3 font-semibold">${f.total_amount.toLocaleString()}</td>
+                        <td className="p-3 text-emerald-700">${f.paid_amount.toLocaleString()}</td>
+                        <td className="p-3 font-mono font-bold text-amber-700">${f.remaining_amount.toLocaleString()}</td>
+                        <td className="p-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${f.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{f.status}</span></td>
+                        <td className="p-3 text-right">
+                          {f.remaining_amount > 0 && (
+                            <button onClick={() => setPayModal({ open: true, feeId: f.id, amount: f.remaining_amount })} className="btn-primary px-2.5 py-1 rounded text-[11px]">Record Payment</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {payModal.open && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border">
+                <h3 className="font-bold text-base text-gray-900 pb-2 border-b">Record Student Fee Payment</h3>
+                <form onSubmit={handleRecordPayment} className="space-y-3 pt-3">
+                  <input type="number" step="0.01" required value={payModal.amount} onChange={e => setPayModal({ ...payModal, amount: e.target.value })} className="input-portal w-full p-2 rounded-lg text-xs font-mono font-bold" />
+                  <div className="flex justify-end gap-2">
+                    <button type="button" onClick={() => setPayModal({ open: false, feeId: null, amount: '' })} className="px-3 py-1.5 border rounded-lg text-xs">Cancel</button>
+                    <button type="submit" className="btn-primary px-3 py-1.5 rounded-lg text-xs font-bold">Apply</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 6. STUDENT DASHBOARD COMPONENT
+    // ==========================================
+    function StudentDashboard({ user }) {
+      const studentId = user.studentId || 1;
+      const [att, setAtt] = useState(null);
+      const [feeInfo, setFeeInfo] = useState(null);
+      const [payModal, setPayModal] = useState(false);
+      const [amount, setAmount] = useState('');
+
+      const refresh = () => {
+        setAtt(ERP.getAttendanceSummary(studentId));
+        setFeeInfo(ERP.getFees(studentId));
+      };
+
+      useEffect(() => { refresh(); }, [studentId]);
+
+      const handlePay = (e) => {
+        e.preventDefault();
+        const dueFee = feeInfo?.list?.find(f => f.status === 'due');
+        if (dueFee) {
+          ERP.recordPayment(dueFee.id, amount);
+          setPayModal(false);
+          refresh();
+        }
+      };
+
+      return (
+        <div className="space-y-6">
+          {/* Student Profile Header */}
+          <div className="bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#121417] text-white flex items-center justify-center text-xl font-bold shadow-sm">
+                <svg className="w-8 h-8 text-[#FFD233]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">
+                    Enrolled Student
+                  </span>
+                  <span className="font-mono text-xs font-bold text-gray-500">{user.rollNumber || 'STU-2024-0041'}</span>
+                </div>
+                <h2 className="text-2xl font-black text-gray-900 mt-1">{user.displayName || 'Alex Johnson'}</h2>
+                <p className="text-xs text-gray-500">{user.department || 'Computer Science & Engineering'} • Semester 3</p>
+              </div>
+            </div>
+
+            {feeInfo?.hasDue && (
+              <button
+                onClick={() => { setAmount(feeInfo.totalRemaining); setPayModal(true); }}
+                className="btn-primary px-4 py-2 rounded-lg text-xs font-bold uppercase shadow-sm"
+              >
+                Pay Remaining Dues (${feeInfo.totalRemaining.toLocaleString()})
+              </button>
+            )}
+          </div>
+
+          {/* 1. CRITICAL ATTENDANCE WARNING (< 75%) */}
+          {att?.isBelow75Warning && (
+            <div className="bg-gradient-to-r from-amber-50 to-rose-50 border-2 border-amber-400 rounded-2xl p-5 shadow-md flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold text-xl shadow">
+                ⚠️
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-black text-base text-amber-950 uppercase tracking-tight">
+                    Mandatory Attendance Warning • Current Rate: {att.attendancePercentage}%
+                  </h3>
+                  <span className="px-2.5 py-0.5 bg-rose-600 text-white text-[10px] font-black uppercase rounded-full tracking-wider animate-pulse">
+                    Debarment Risk
+                  </span>
+                </div>
+                <p className="text-xs text-amber-900 mt-1 font-medium leading-relaxed">
+                  Your overall campus attendance is below the mandatory <strong className="font-bold underline">75.0% threshold</strong> prescribed under University Academic Regulations. Failure to attain 75% will lead to disqualification from sitting for end-semester examinations.
+                </p>
+                <div className="mt-3 bg-white/80 border border-amber-300 rounded-lg p-2.5 text-xs text-gray-800 font-semibold flex items-center justify-between">
+                  <span>Required Recovery Action: Attend the next <strong className="text-rose-700 underline font-black">{att.classesNeededToRecover} consecutive lectures</strong> without absence.</span>
+                  <span className="text-[11px] text-gray-500 font-normal">Contact Department Counselor</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. FEE DUE WARNING NOTIFICATION */}
+          {feeInfo?.hasDue && (
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-[#FFD233] rounded-2xl p-5 shadow-md flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-[#FFD233] text-black flex items-center justify-center shrink-0 font-bold text-xl shadow">
+                🔔
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-black text-base text-gray-900 uppercase tracking-tight">
+                    Institutional Fee Due Alert • Pending Balance: ${feeInfo.totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </h3>
+                  <span className="px-2.5 py-0.5 bg-amber-500 text-white text-[10px] font-black uppercase rounded-full tracking-wider">
+                    Action Required
+                  </span>
+                </div>
+                <p className="text-xs text-gray-700 mt-1 font-medium leading-relaxed">
+                  Outstanding tuition balance of <strong>${feeInfo.totalRemaining.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong> remaining to be submitted. Please clear payment before the due date to avoid registration and transcript holds.
+                </p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-xs text-gray-600 font-medium">Due Date: <strong>{feeInfo.list[0]?.due_date}</strong> (Fall Semester)</span>
+                  <button
+                    onClick={() => { setAmount(feeInfo.totalRemaining); setPayModal(true); }}
+                    className="btn-primary px-3.5 py-1.5 rounded-lg text-xs font-bold"
+                  >
+                    Clear Remaining Fee Now →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modules Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Attendance Module View */}
+            <div className="lg:col-span-6 bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 className="font-extrabold text-base text-gray-900">Attendance Module</h3>
+                <span className={`px-2.5 py-1 rounded text-xs font-black ${att?.isBelow75Warning ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                  {att?.attendancePercentage}%
+                </span>
+              </div>
+
+              {att && (
+                <>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border border-gray-200">
+                      <div className="text-xl font-black text-gray-900">{att.totalSessions}</div>
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">Total</div>
+                    </div>
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border border-gray-200">
+                      <div className="text-xl font-black text-emerald-700">{att.attendedSessions}</div>
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">Present</div>
+                    </div>
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border border-gray-200">
+                      <div className="text-xl font-black text-rose-700">{att.absentSessions}</div>
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">Absent</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {att.courses.map(c => (
+                      <div key={c.course_code} className="bg-[#FAF8F2] border border-[#ECE5D5] rounded-xl p-3">
+                        <div className="flex items-center justify-between mb-1 text-xs font-bold">
+                          <span className="text-gray-900">{c.course_code}: {c.course_name}</span>
+                          <span className={c.course_percentage < 75 ? 'text-rose-700' : 'text-emerald-700'}>{c.course_percentage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${c.course_percentage < 75 ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: `${c.course_percentage}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Fee Module View */}
+            <div className="lg:col-span-6 bg-white border border-[#E6DFD1] rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 className="font-extrabold text-base text-gray-900">Fee Module</h3>
+                <span className={`px-2.5 py-1 rounded text-xs font-black ${feeInfo?.hasDue ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                  {feeInfo?.hasDue ? 'Payment Pending' : 'Fully Paid'}
+                </span>
+              </div>
+
+              {feeInfo && (
+                <>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border border-gray-200">
+                      <div className="text-lg font-black text-gray-900">${feeInfo.totalAssessed.toLocaleString()}</div>
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">Assessed</div>
+                    </div>
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border border-gray-200">
+                      <div className="text-lg font-black text-emerald-700">${feeInfo.totalPaid.toLocaleString()}</div>
+                      <div className="text-[10px] text-gray-500 font-bold uppercase">Paid</div>
+                    </div>
+                    <div className="bg-[#FAF8F2] p-3 rounded-xl border-2 border-amber-400 bg-amber-50">
+                      <div className="text-lg font-black text-amber-800 font-mono">${feeInfo.totalRemaining.toLocaleString()}</div>
+                      <div className="text-[10px] text-amber-900 font-extrabold uppercase">Remaining Fee</div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#FAF8F2] border-b text-[10px] text-gray-600 font-bold uppercase">
+                        <tr>
+                          <th className="p-2.5">Semester</th>
+                          <th className="p-2.5">Total</th>
+                          <th className="p-2.5">Paid</th>
+                          <th className="p-2.5">Remaining</th>
+                          <th className="p-2.5">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {feeInfo.list.map(f => (
+                          <tr key={f.id}>
+                            <td className="p-2.5 font-semibold">Sem {f.semester}</td>
+                            <td className="p-2.5">${f.total_amount.toLocaleString()}</td>
+                            <td className="p-2.5 text-emerald-700">${f.paid_amount.toLocaleString()}</td>
+                            <td className="p-2.5 font-mono font-bold text-amber-700">${f.remaining_amount.toLocaleString()}</td>
+                            <td className="p-2.5"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${f.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{f.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Pay Modal */}
+          {payModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border">
+                <h3 className="font-bold text-base text-gray-900 pb-2 border-b">Submit Tuition Fee Payment</h3>
+                <form onSubmit={handlePay} className="space-y-4 pt-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Amount ($)</label>
+                    <input type="number" step="0.01" required value={amount} onChange={e => setAmount(e.target.value)} className="input-portal w-full p-2 rounded-lg text-sm font-mono font-bold" />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button type="button" onClick={() => setPayModal(false)} className="px-3 py-1.5 border rounded-lg text-xs">Cancel</button>
+                    <button type="submit" className="btn-primary px-4 py-1.5 rounded-lg text-xs font-bold">Authorize Payment</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 7. ROOT APP ORCHESTRATOR
+    // ==========================================
+    function App() {
+      const [currentUser, setCurrentUser] = useState(null);
+
+      const handleLoginSuccess = (user) => {
+        setCurrentUser(user);
+      };
+
+      const handleSignOut = () => {
+        setCurrentUser(null);
+      };
+
+      const handleSwitchRole = (newRole) => {
+        const res = ERP.login(
+          newRole === 'student' ? 'STU-2024-0041' : (newRole === 'faculty' ? 'FAC-BIO-8902' : 'ADM-SEC-0112'),
+          'UniversityPass2024!',
+          newRole
+        );
+        setCurrentUser(res.user);
+      };
+
+      return (
+        <div className="min-h-screen bg-[#FAF7EE] text-[#18191B] flex flex-col font-sans">
+          {!currentUser ? (
+            <LoginView onLoginSuccess={handleLoginSuccess} />
+          ) : (
+            <div className="flex flex-col min-h-screen">
+              <Navbar currentUser={currentUser} onSwitchRole={handleSwitchRole} onSignOut={handleSignOut} />
+              <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+                {currentUser.role === 'admin' && <AdminDashboard user={currentUser} />}
+                {currentUser.role === 'faculty' && <FacultyDashboard user={currentUser} />}
+                {currentUser.role === 'student' && <StudentDashboard user={currentUser} />}
+              </main>
+              <footer className="bg-[#FAF7EE] border-t border-[#ECE5D5] px-4 sm:px-8 py-4 text-[11px] text-gray-500 text-center">
+                ERP-Based Student Management System • Powered by ReactJS, NodeJS & PostgreSQL • Design System 1:1
+              </footer>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Mount Application
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

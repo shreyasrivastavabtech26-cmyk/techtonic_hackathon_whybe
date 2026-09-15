@@ -1,0 +1,13 @@
+{
+  "name": "college-erp-frontend",
+  "version": "1.0.0",
+  "description": "ReactJS Frontend for ERP-Based Student Management System",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'Static React Application ready to run'"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
